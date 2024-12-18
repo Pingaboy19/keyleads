@@ -1,0 +1,593 @@
+<html><head><base href=".">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KEYLEADS - Gestor de Reels</title>
+<style>
+:root {
+  --primary: #405DE6;
+  --secondary: #5B51D8;
+  --accent: #833AB4;
+  --text: #333;
+  --light: #fff;
+  --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: var(--gradient);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: 800;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1.5px;
+}
+
+.tagline {
+  color: var(--text);
+  font-size: 16px;
+  max-width: 300px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.upload-section {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 50px;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.upload-section h2 {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 36px;
+  margin-bottom: 20px;
+  font-weight: 800;
+}
+
+.upload-section p {
+  color: var(--text);
+  font-size: 18px;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.upload-area {
+  border: 3px dashed var(--primary);
+  padding: 50px;
+  border-radius: 15px;
+  margin: 25px 0;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  background: rgba(64,93,230,0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.upload-area:hover::before {
+  opacity: 0.05;
+}
+
+.upload-area:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.upload-icon {
+  width: 90px;
+  height: 90px;
+  fill: var(--primary);
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
+  padding: 35px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.reel-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.reel-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+}
+
+.reel-preview {
+  width: 100%;
+  height: 420px;
+  background: #f8f8f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.reel-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reel-info {
+  padding: 25px;
+}
+
+.reel-info h3 {
+  color: var(--primary);
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.btn {
+  background: var(--gradient);
+  color: var(--light);
+  border: none;
+  padding: 16px 32px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.4s ease;
+  font-size: 16px;
+  box-shadow: 0 8px 20px rgba(64,93,230,0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(64,93,230,0.4);
+}
+
+#fileInput {
+  display: none;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse {
+  animation: pulse 3s infinite ease-in-out;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: var(--light);
+  padding: 40px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 550px;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.close-modal {
+  position: absolute;
+  right: 25px;
+  top: 25px;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text);
+  transition: transform 0.3s ease;
+}
+
+.close-modal:hover {
+  transform: rotate(90deg);
+}
+
+.schedule-options {
+  margin: 25px 0;
+  padding: 20px;
+  border: 2px solid #eee;
+  border-radius: 15px;
+  background: #fafafa;
+}
+
+.ai-suggestion {
+  background: linear-gradient(135deg, rgba(64,93,230,0.1), rgba(131,58,180,0.1));
+  padding: 20px;
+  border-radius: 15px;
+  margin: 20px 0;
+  border: 1px solid rgba(64,93,230,0.2);
+}
+
+.time-picker {
+  width: 100%;
+  padding: 15px;
+  margin: 15px 0;
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.time-picker:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(64,93,230,0.2);
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .logo-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .logo {
+    font-size: 28px;
+  }
+
+  .tagline {
+    font-size: 14px;
+    max-width: 100%;
+  }
+
+  .upload-section {
+    padding: 30px 20px;
+  }
+
+  .upload-section h2 {
+    font-size: 28px;
+  }
+
+  .upload-section p {
+    font-size: 16px;
+  }
+
+  .upload-area {
+    padding: 30px 15px;
+  }
+
+  .upload-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .grid-container {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .modal-content {
+    padding: 25px;
+    width: 95%;
+    margin: 10px;
+  }
+
+  .schedule-options {
+    padding: 15px;
+  }
+
+  body {
+    padding: 10px;
+  }
+
+  .reel-preview {
+    height: 380px;
+  }
+
+  .reel-info {
+    padding: 20px;
+  }
+
+  .reel-info h3 {
+    font-size: 16px;
+  }
+
+  .close-modal {
+    right: 15px;
+    top: 15px;
+    font-size: 24px;
+  }
+
+  .time-picker {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .ai-suggestion {
+    padding: 15px;
+  }
+
+  .ai-suggestion h3 {
+    font-size: 16px;
+  }
+
+  .ai-suggestion p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .logo {
+    font-size: 24px;
+  }
+
+  .upload-section h2 {
+    font-size: 24px;
+  }
+
+  .upload-area {
+    padding: 20px 10px;
+  }
+
+  .upload-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .reel-preview {
+    height: 340px;
+  }
+
+  .modal-content {
+    padding: 20px;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo-container">
+        <div class="logo">KEYLEADS</div>
+        <div class="tagline">Potencia tu presencia en Instagram con la gestión más inteligente de Reels</div>
+      </div>
+      <button class="btn">Iniciar Sesión con Instagram</button>
+    </header>
+
+    <section class="upload-section">
+      <h2>Gestiona tus Reels como un profesional</h2>
+      <p>Sube, previsualiza y programa tus videos en segundos</p>
+      
+      <div class="upload-area animate-pulse">
+        <svg class="upload-icon" viewBox="0 0 24 24">
+          <path d="M11 15h2V6h3l-4-5-4 5h3v9zm0 2H6l-2 2h16l-2-2h-5z"/>
+        </svg>
+        <p>Arrastra tus archivos aquí o haz clic para seleccionar</p>
+      </div>
+      
+      <input type="file" id="fileInput" accept="video/*" multiple>
+      <button class="btn" onclick="document.getElementById('fileInput').click()">Seleccionar Videos</button>
+    </section>
+
+    <div class="grid-container" id="reelsContainer">
+      <!-- Los reels se agregarán aquí dinámicamente -->
+    </div>
+  </div>
+
+  <div class="modal" id="scheduleModal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Programar Publicación</h2>
+      <div class="ai-suggestion">
+        <h3>🤖 Sugerencia IA</h3>
+        <p id="aiSuggestion">Analizando el mejor momento para publicar...</p>
+      </div>
+      <div class="schedule-options">
+        <h3>Selecciona la hora de publicación</h3>
+        <input type="datetime-local" class="time-picker" id="schedulePicker">
+        <button class="btn" onclick="schedulePost()">Programar Publicación</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const uploadArea = document.querySelector('.upload-area');
+    const fileInput = document.getElementById('fileInput');
+    const reelsContainer = document.getElementById('reelsContainer');
+    const modal = document.getElementById('scheduleModal');
+    const closeModal = document.querySelector('.close-modal');
+    let currentReelCard = null;
+
+    const aiSuggestions = {
+      morning: "Basado en el análisis de tu audiencia, te sugiero publicar entre 9:00 AM y 11:00 AM cuando tus seguidores están más activos.",
+      afternoon: "El engagement es mayor entre 2:00 PM y 4:00 PM. Este es un excelente momento para publicar.",
+      evening: "Las horas pico de engagement son entre 7:00 PM y 9:00 PM. Te recomiendo publicar en este rango."
+    };
+
+    function getAISuggestion() {
+      const hour = new Date().getHours();
+      if (hour >= 6 && hour < 12) return aiSuggestions.morning;
+      if (hour >= 12 && hour < 17) return aiSuggestions.afternoon;
+      return aiSuggestions.evening;
+    }
+
+    function createReelCard(videoFile) {
+      const card = document.createElement('div');
+      card.className = 'reel-card';
+
+      const preview = document.createElement('div');
+      preview.className = 'reel-preview';
+
+      const video = document.createElement('video');
+      video.controls = true;
+      video.src = URL.createObjectURL(videoFile);
+      video.style.width = '100%';
+      video.style.height = '100%';
+      video.style.objectFit = 'cover';
+
+      const info = document.createElement('div');
+      info.className = 'reel-info';
+      info.innerHTML = `
+        <h3>${videoFile.name}</h3>
+        <p>Listo para publicar</p>
+        <button class="btn" onclick="showScheduleModal(this)">Programar Publicación</button>
+      `;
+
+      preview.appendChild(video);
+      card.appendChild(preview);
+      card.appendChild(info);
+
+      return card;
+    }
+
+    function showScheduleModal(btn) {
+      currentReelCard = btn.closest('.reel-card');
+      modal.style.display = 'flex';
+      document.getElementById('aiSuggestion').textContent = getAISuggestion();
+      
+      const now = new Date();
+      now.setHours(now.getHours() + 1);
+      const defaultDateTime = now.toISOString().slice(0,16);
+      document.getElementById('schedulePicker').value = defaultDateTime;
+    }
+
+    function schedulePost() {
+      const scheduledTime = document.getElementById('schedulePicker').value;
+      const scheduleInfo = document.createElement('p');
+      scheduleInfo.style.color = 'var(--primary)';
+      scheduleInfo.innerHTML = `<strong>Programado para:</strong> ${new Date(scheduledTime).toLocaleString()}`;
+      
+      const infoDiv = currentReelCard.querySelector('.reel-info');
+      const existingSchedule = infoDiv.querySelector('p:not(:first-child)');
+      if (existingSchedule) {
+        infoDiv.removeChild(existingSchedule);
+      }
+      infoDiv.appendChild(scheduleInfo);
+      
+      modal.style.display = 'none';
+    }
+
+    closeModal.onclick = () => modal.style.display = 'none';
+    window.onclick = (e) => {
+      if (e.target == modal) modal.style.display = 'none';
+    }
+
+    fileInput.addEventListener('change', (e) => {
+      const files = e.target.files;
+      handleFiles(files);
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = 'rgba(64,93,230,0.1)';
+    });
+
+    uploadArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = 'rgba(64,93,230,0.05)';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = 'rgba(64,93,230,0.05)';
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
+
+    function handleFiles(files) {
+      for (const file of files) {
+        if (file.type.startsWith('video/')) {
+          const reelCard = createReelCard(file);
+          reelsContainer.insertBefore(reelCard, reelsContainer.firstChild);
+        } else {
+          alert('Por favor, sube solo archivos de video.');
+        }
+      }
+    }
+
+    uploadArea.addEventListener('click', () => {
+      fileInput.click();
+    });
+  </script>
+</body>
+</html>
